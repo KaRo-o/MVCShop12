@@ -1,0 +1,47 @@
+{
+  "groups": [
+    {
+      "name": "myapp",
+      "type": "com.model2.mvc.common.Page",
+      "sourceType": "com.model2.mvc.common.Page"
+    }
+  ],
+  "properties": [
+    {
+      "name": "myapp.begin-unit-page",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.current-page",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.end-unit-page",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.max-page",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.page-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.page-unit",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    },
+    {
+      "name": "myapp.total-count",
+      "type": "java.lang.Integer",
+      "sourceType": "com.model2.mvc.common.Page"
+    }
+  ],
+  "hints": []
+}
