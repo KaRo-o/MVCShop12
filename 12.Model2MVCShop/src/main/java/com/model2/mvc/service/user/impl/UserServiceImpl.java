@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.model2.mvc.common.Search;
 import com.model2.mvc.service.domain.User;
@@ -16,11 +17,12 @@ import com.model2.mvc.service.user.UserDao;;
 
 //==> 회원관리 서비스 구현
 @Service("userServiceImpl")
+@Transactional()
 public class UserServiceImpl implements UserService{
 	
 	///Field
 	@Autowired
-	@Qualifier("userDaoImpl")
+	@Qualifier("userDao")
 	private UserDao userDao;
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
@@ -41,8 +43,14 @@ public class UserServiceImpl implements UserService{
 	}
 
 	public Map<String , Object > getUserList(Search search) throws Exception {
+		
+		System.out.println("userServiceImpl getUserList");
+		System.out.println(search);
+		
 		List<User> list= userDao.getUserList(search);
 		int totalCount = userDao.getTotalCount(search);
+		System.out.println("list"+list);
+		System.out.println("totalCount"+totalCount);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("list", list );

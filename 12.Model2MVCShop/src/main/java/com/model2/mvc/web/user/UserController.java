@@ -159,8 +159,9 @@ public class UserController {
 		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
 		}
-		search.setPageSize(pageSize);
 		
+		search.setPageSize(pageSize);
+		System.out.println("search"+search);
 		// Business logic ผ๖วเ
 		Map<String , Object> map=userService.getUserList(search);
 		

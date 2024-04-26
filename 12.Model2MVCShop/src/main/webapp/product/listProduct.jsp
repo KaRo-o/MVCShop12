@@ -144,8 +144,10 @@ var currPage = 2;
 $(window).scroll(function() {
 	var aaa =$(document).scrollTop();
 	console.log(aaa);
+	console.log("$(document).height() : "+$(document).height());
+    console.log("$(window).height() : "+$(window).height());
     if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
-      
+      console.log("!");
      
       $.ajax(
     		  {
@@ -160,6 +162,7 @@ $(window).scroll(function() {
 			        currentPage: currPage
 			      }),
 				  success : function(JSONData, status) {
+					  console.log(JSONData);
 					  if(JSONData.product.length != 0){
 						  console.log(++currPage);
 						  console.log("complete")

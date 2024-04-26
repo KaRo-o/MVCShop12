@@ -46,10 +46,9 @@ public class ProductController {
 	private ImageService imageService;
 	
 	
-//	@Value("#{commonProperties['pageUnit']}")
+	@Value("${pageUnit}")
 	int pageUnit;
-	
-//	@Value("#{commonProperties['pageSize']}")
+	@Value("${pageSize}")
 	int pageSize;
 	
 	
@@ -64,7 +63,8 @@ public class ProductController {
 		Image image = new Image();
 		
 		
-		String uploadPath = "C:\\Users\\bitcamp\\git\\MVCShop11\\11.Model2MVCShop\\src\\main\\webapp\\images\\uploadFiles\\";
+//		String uploadPath = "C:\\Users\\bitcamp\\git\\MVCShop11\\11.Model2MVCShop\\src\\main\\webapp\\images\\uploadFiles\\";
+		String uploadPath = "C:\\Users\\bitcamp\\Downloads\\mvcshop13\\public\\images\\";
 		//String uploadPath = "C:\\Users\\nghng\\git\\MVCShop09\\09.Model2MVCShop(jQuery)\\src\\main\\webapp\\images\\uploadFiles\\";
 		
 		List<MultipartFile> file = request.getFiles("fileName");
@@ -178,6 +178,7 @@ public class ProductController {
 			search.setCurrentPage(1);
 		}
 		search.setPageSize(pageSize);
+		System.out.println("asd : "+search);
 		
 		Map<String, Object> map = productService.getProductList(search);
 		
@@ -185,9 +186,11 @@ public class ProductController {
 		Page resultPage = new Page(search.getCurrentPage(), 
 								((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		
+		System.out.println("resutl"+resultPage);
+		
 		model.addAttribute("product", map.get("product"));
 		model.addAttribute("resultPage",resultPage);
-		model.addAttribute("search", search);
+		//model.addAttribute("search", search);
 		
 		
 		return "forward:/product/listProduct.jsp";

@@ -85,6 +85,7 @@ public class UserRestController {
 			search.setCurrentPage(1);
 		}
 		
+		System.out.println("search"+search);
 		search.setPageSize(pageSize);
 		
 		
