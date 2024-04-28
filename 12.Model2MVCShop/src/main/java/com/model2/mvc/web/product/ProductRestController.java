@@ -1,8 +1,11 @@
 package com.model2.mvc.web.product;
 
 import java.io.File;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +36,7 @@ import com.model2.mvc.service.domain.Product;
 import com.model2.mvc.service.product.ProductService;
 
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/product/*")
 public class ProductRestController {
@@ -82,50 +86,60 @@ public class ProductRestController {
 	}
 	
 	@PostMapping(value="json/addProduct")
-	public void addProduct(MultipartHttpServletRequest request)throws Exception{
-		Product product = new Product();
-		Image image = new Image();
-		
-		String uploadPath = "C:\\Users\\bitcamp\\git\\MVCShop11\\11.Model2MVCShop\\src\\main\\webapp\\images\\uploadFiles\\";
-		
-		List<MultipartFile> file = request.getFiles("fileName");
-		
-		UUID fileKey = UUID.randomUUID();
-		product.setFileName(fileKey.toString());
-		image.setFileKey(fileKey.toString());
-		
-		for(MultipartFile i : file) {
-			if(i!=null) {
-			String originalFileName = i.getOriginalFilename(); //ÆÄÀÏ¸í ¹Ş¾Æ¿À±â
-			UUID uuid = UUID.randomUUID(); // UniqueÇÑ °ª »ı¼º
-			
-			System.out.println("originalFileName : "+originalFileName + ", UUID : "+uuid);
-			
-			String fileName = uuid.toString() + "_" + originalFileName; // Unique ÇÑ °ª°í ±âÁ¸ ÆÄÀÏ ¸í ÇÕÃÄ¼­ Áßº¹µÇÁö ¾Ê´Â ÀÌ¸§À¸·Î ÀúÀå
-			
-			image.setFileName(fileName);
-			imageService.addImage(image);
-			i.transferTo(new File(uploadPath+fileName));  // ÆÄÀÏ ¾÷·ÎµåÇÒ °æ·Î¿¡ ÁöÁ¤ÇÑ ÆÄÀÏ¸íÀ¸·Î ¾÷·Îµå
-			}
-		}
-		
-
-		
-		product.setProdName(request.getParameter("prodName"));
-		product.setProdDetail(request.getParameter("prodDetail"));
-		product.setManuDate(request.getParameter("manuDate"));
-		product.setPrice(Integer.parseInt(request.getParameter("price")));
-		//product.setFileName(fileName);
-
-		if(product.getManuDate().contains("-")) {
-			String[] md = product.getManuDate().split("-");
-			product.setManuDate(md[0]+md[1]+md[2]);
-		}
-		System.out.println(product.toString());
-		
-		productService.addProduct(product);
-		request.setAttribute("product", product);
+	public void addProduct(MultipartHttpServletRequest request,
+	          @RequestParam("files") List<MultipartFile> files,
+	          @RequestParam("prodName") String prodName,
+	          @RequestParam("prodDetail") String prodDetail,
+	          @RequestParam("manuDate") String manuDate,
+	          @RequestParam("price") int price ) throws Exception{
+	    Product product = new Product();
+	    Image image = new Image();
+	    
+	    // íŒŒì¼ ì—…ë¡œë“œ ê²½ë¡œ ì„¤ì •
+	    String uploadPath = "C:\\Users\\nghng\\Downloads\\mvcshop13\\public\\images\\";
+	    
+	    List<MultipartFile> file = request.getFiles("files");
+	    
+	    System.out.println(file);
+	    
+	    // íŒŒì¼ ê³ ìœ í•œ í‚¤ ìƒì„±
+	    UUID fileKey = UUID.randomUUID();
+	    product.setFileName(fileKey.toString());
+	    image.setFileKey(fileKey.toString());
+	    
+	    // íŒŒì¼ ì—…ë¡œë“œ ë° ì •ë³´ ì €ì¥
+	    for(MultipartFile i : file) {
+	        if(i != null) {
+	            String originalFileName = i.getOriginalFilename();
+	            UUID uuid = UUID.randomUUID();
+	            
+	            String fileName = uuid.toString() + "_" + originalFileName;
+	            
+	            image.setFileName(fileName);
+	            imageService.addImage(image);
+	            i.transferTo(new File(uploadPath + fileName));
+	        }
+	    }
+	    
+	    
+	    // ë‚ ì§œ í˜•ì‹ ë³€í™˜
+	    SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z", Locale.ENGLISH);
+	    Date sqlDate = new Date(inputFormat.parse(manuDate).getTime());
+	    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyyMMdd");
+	    String formattedManuDate = outputFormat.format(sqlDate);
+	    
+	    System.out.println(formattedManuDate+prodName+prodDetail+price);
+	    
+	    // ìƒí’ˆ ì •ë³´ ì„¤ì •
+	    product.setProdName(prodName);
+	    product.setProdDetail(prodDetail);
+	    product.setManuDate(formattedManuDate);
+	    product.setPrice(price);
+	    
+	    productService.addProduct(product);
+	    request.setAttribute("product", product);
 	}
+
 	
 	@GetMapping(value="/json/updateProductView/{prodNo}")
 	public Map<String,Object> updateProdudctView(@PathVariable("prodNo") int prodNo, Model model) throws Exception{
@@ -159,16 +173,16 @@ public class ProductRestController {
 		
 		for(MultipartFile i : file) {
 			if(i!=null) {
-			String originalFileName = i.getOriginalFilename(); //ÆÄÀÏ¸í ¹Ş¾Æ¿À±â
-			UUID uuid = UUID.randomUUID(); // UniqueÇÑ °ª »ı¼º
+			String originalFileName = i.getOriginalFilename(); //ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½Ş¾Æ¿ï¿½ï¿½ï¿½
+			UUID uuid = UUID.randomUUID(); // Uniqueï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			
 			System.out.println("originalFileName : "+originalFileName + ", UUID : "+uuid);
 			
-			String fileName = uuid.toString() + "_" + originalFileName; // Unique ÇÑ °ª°í ±âÁ¸ ÆÄÀÏ ¸í ÇÕÃÄ¼­ Áßº¹µÇÁö ¾Ê´Â ÀÌ¸§À¸·Î ÀúÀå
+			String fileName = uuid.toString() + "_" + originalFileName; // Unique ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¼ï¿½ ï¿½ßºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			
 			image.setFileName(fileName);
 			imageService.addImage(image);
-			i.transferTo(new File(uploadPath+fileName));  // ÆÄÀÏ ¾÷·ÎµåÇÒ °æ·Î¿¡ ÁöÁ¤ÇÑ ÆÄÀÏ¸íÀ¸·Î ¾÷·Îµå
+			i.transferTo(new File(uploadPath+fileName));  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 			}
 		}
 		
